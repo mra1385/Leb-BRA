@@ -188,6 +188,7 @@ tbody tr.highlighted-row:hover td:first-child {
     overflow-y: auto; /* Scroll if content overflows */
     padding: 20px;
     padding-top: 60px; /* Space for close button */
+    box-sizing: border-box; /* Include padding in height calculation */
 }
 
 #toc-menu.toc-menu-visible {
