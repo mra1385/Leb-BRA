@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+body {
+    font-family: 'Lato', sans-serif;
+    margin: 20px;
+    background-color: #f4f7f6;
+    color: #333;
+    transition: margin-left 0.3s ease-in-out; /* Added for main content shift */
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+#table-container {
+    margin-top: 20px;
+    overflow: auto; /* Enable scrolling on the container */
+    max-height: 85vh; /* Limit height to enable scrolling - Increased from 70vh */
+    position: relative; /* Needed for sticky headers */
+    border: 1px solid #ddd; /* Add border around the scrollable area */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse; /* Changed from separate */
+    table-layout: fixed; /* Helps with column widths */
+    background-color: #fff;
+}
+
+/* Apply horizontal borders only */
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: top; /* Align content to the top */
+    border: none; /* Remove all borders initially */
+    border-bottom: 1px solid #e0e0e0; /* Add only bottom border */
+    word-wrap: break-word; /* Ensure long words break */
+    font-size: 0.95em; /* Slightly smaller text for table data */
+}
+
+thead th {
+    background-color: #e9ecef; /* Lighter grey for header */
+    color: #495057;
+    position: sticky;
+    top: 0; /* Stick to the top of the container */
+    z-index: 10;
+    border-bottom: 2px solid #adb5bd; /* Stronger border below header */
+}
+
+tbody td:first-child {
+    background-color: #f8f9fa; /* Slightly different background for first column */
+    font-weight: bold;
+    position: sticky;
+    left: 0; /* Stick to the left */
+    z-index: 5; /* Below header but above content */
+    border-right: 1px solid #dee2e6; /* Separator line */
+}
+
+/* Ensure the top-left header cell is also sticky */
+thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15; /* Above row headers and body headers */
+    border-right: 1px solid #dee2e6;
+}
+
+/* Remove bottom border for the last row */
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Alternating row colors */
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Light grey for even rows */
+}
+tbody tr:nth-child(even) td:first-child {
+    background-color: #e9ecef; /* Slightly darker grey for first cell in even rows */
+}
+
+/* Hover effect */
+tbody tr:hover {
+    background-color: #e2e6ea;
+}
+tbody tr:hover td:first-child {
+    background-color: #d6dadf; /* Darker hover for first column */
+}
+
+td {
+    line-height: 1.5; /* Improve readability within cells */
+}
+
+br {
+    /* Ensure <br> tags create clear separation */
+    content: "";
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+
+#table-container p {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* --- Highlighted Row Styles --- */
+tbody tr.highlighted-row {
+    background-color: #cfe2ff !important; /* Use important to override hover/alternating */
+}
+tbody tr.highlighted-row td {
+     /* Inherits background unless specified */
+}
+tbody tr.highlighted-row td:first-child {
+    background-color: #b9d3ff !important; /* Darker highlight for first cell */
+}
+
+/* Keep hover effect on highlighted row distinct */
+tbody tr.highlighted-row:hover {
+    background-color: #abcaff !important;
+}
+tbody tr.highlighted-row:hover td:first-child {
+    background-color: #9cbfff !important;
+}
+
+/* --- Right Context Overlay --- */
+#right-context-overlay {
+    position: fixed; /* Fixed relative to viewport */
+    right: 20px;     /* Position from right edge */
+    top: 20px;      /* Position higher up */
+    width: 150px;    /* Fixed width */
+    padding: 15px;
+    background-color: rgba(52, 58, 64, 0.9); /* Semi-transparent dark background */
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 20; /* Ensure it is above ToC button but below menu */
+    font-size: 0.85em;
+    line-height: 1.4;
+     /* NO transition needed as it should stay fixed */
+}
+
+#right-context-overlay span {
+    font-size: 0.9em;
+    color: #ced4da; /* Lighter text for label */
+    display: block;
+    margin-bottom: 5px;
+}
+
+#current-aspect-label {
+    font-weight: bold;
+    word-wrap: break-word; /* Wrap long category names */
+}
+
+/* --- Table of Contents Menu Button --- */
+#toc-menu-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 30; /* Above right context overlay */
+    padding: 8px 12px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s ease;
+}
+
+#toc-menu-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Table of Contents Menu Panel --- */
+#toc-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px; /* Adjust width as needed */
+    height: 100%;
+    background-color: #f8f9fa;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 40; /* Highest z-index */
+    transform: translateX(-100%); /* Start hidden off-screen */
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto; /* Scroll if content overflows */
+    padding: 20px;
+    padding-top: 60px; /* Space for close button */
+}
+
+#toc-menu.toc-menu-visible {
+    transform: translateX(0); /* Slide in */
+}
+
+#toc-menu h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+#toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#toc-list li a {
+    display: block;
+    padding: 8px 0;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95em;
+    border-bottom: 1px dashed #eee;
+    transition: background-color 0.2s ease;
+}
+
+#toc-list li:last-child a {
+    border-bottom: none;
+}
+
+#toc-list li a:hover {
+    background-color: #e9ecef;
+    color: #0056b3;
+}
+
+/* --- ToC Close Button --- */
+#toc-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+#toc-close-button:hover {
+    color: #343a40;
+}
+
+/* --- Main Content Wrapper --- */
+#main-content {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Style for when ToC menu is open - Shift main content */
+body.toc-menu-open #main-content {
+    margin-left: 250px; /* Should match #toc-menu width */
+}
+
+/* The rule to shift #right-context-overlay is INTENTIONALLY removed/commented out */
+/*
+body.toc-menu-open #right-context-overlay {
+     right: calc(20px + 250px); // This was causing the shift
+     transition: right 0.3s ease-in-out; // This was related
+}
+*/
+
+/* Ensure body itself doesn't get shifted if padding was used */
+/* body.toc-menu-open { padding-left: 0 !important; } */ /* Reset any accidental body padding shift */
+
