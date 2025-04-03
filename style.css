@@ -274,3 +274,82 @@ body.toc-menu-open #right-context-overlay {
 /* Ensure body itself doesn't get shifted if padding was used */
 /* body.toc-menu-open { padding-left: 0 !important; } */ /* Reset any accidental body padding shift */
 
+/* --- Responsive Table for Mobile --- */
+@media screen and (max-width: 768px) {
+    #table-container {
+        max-height: none; /* Allow full height on mobile if needed */
+        border: none; /* Remove border */
+        box-shadow: none; /* Remove shadow */
+    }
+
+    table {
+        border: none; /* Remove table border */
+        table-layout: auto; /* Switch back to auto layout */
+    }
+
+    thead {
+        display: none; /* Hide the table header */
+    }
+
+    table, tbody, tr, td {
+        display: block; /* Force elements to stack */
+        width: 100% !important; /* Take full width */
+        box-sizing: border-box;
+    }
+
+    tr {
+        border: 1px solid #ddd;
+        margin-bottom: 1em;
+        background-color: #fff !important; /* Override alternating colors */
+    }
+
+    td {
+        border: none;
+        border-bottom: 1px dotted #eee;
+        text-align: left !important; /* Ensure left alignment */
+        padding: 10px;
+        padding-left: 15px;
+        position: static; /* Override sticky */
+    }
+
+    /* Add data labels before cell content */
+    td::before {
+        content: attr(data-label); /* Get content from data-label attribute */
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #555;
+        text-transform: uppercase;
+        font-size: 0.8em;
+    }
+
+    td:last-child {
+        border-bottom: none;
+    }
+
+    /* Reset sticky first column styles */
+    tbody td:first-child, thead th:first-child {
+        position: static;
+        width: 100% !important;
+        min-width: initial;
+        max-width: initial;
+        border-right: none;
+        background-color: inherit !important; /* Reset background */
+        font-weight: normal; /* Reset font weight */
+        z-index: auto;
+        padding-left: 15px; /* Match other cells */
+    }
+
+    /* Adjustments for context overlay and menu button if needed */
+    #right-context-overlay {
+        display: none; /* Optionally hide the context overlay on mobile */
+    }
+    #toc-menu-button {
+        top: 10px;
+        left: 10px;
+    }
+    #toc-menu {
+        width: 85%; /* Make menu wider on mobile */
+    }
+}
+
