@@ -128,23 +128,6 @@ function populateToc(tbody, tocListElement, scrollContainer) {
     console.log(`   populateToc: Found ${rows.length} rows in tbody.`); 
     let itemsAdded = 0;
 
-    // Add scrolling adjustment CSS - forces anchors to account for fixed header
-    let scrollPaddingStyle = document.getElementById('scroll-padding-style');
-    if (!scrollPaddingStyle) {
-        scrollPaddingStyle = document.createElement('style');
-        scrollPaddingStyle.id = 'scroll-padding-style';
-        document.head.appendChild(scrollPaddingStyle);
-    }
-    
-    const tableHeader = scrollContainer.querySelector('thead');
-    const headerHeight = tableHeader ? tableHeader.offsetHeight : 0;
-    scrollPaddingStyle.textContent = `
-        #table-container {
-            scroll-padding-top: ${headerHeight}px;
-        }
-    `;
-    console.log(`Applied scroll-padding-top of ${headerHeight}px`);
-
     rows.forEach((row, index) => {
         const firstCell = row.querySelector('td:first-child');
         if (firstCell && firstCell.textContent.trim()) {
@@ -166,24 +149,73 @@ function populateToc(tbody, tocListElement, scrollContainer) {
 
     // Add a delegated event listener for the TOC list
     tocListElement.addEventListener('click', function(event) {
-        // Find the closest anchor if the event target is inside one
         const link = event.target.closest('a.toc-link');
         if (link) {
-            // Let the default browser behavior handle the scroll
-            // But add our custom behavior after it
-            
-            // Get the target row ID from the href
             const targetId = link.getAttribute('href').substring(1);
             const targetRow = document.getElementById(targetId);
-            
-            // Add highlighting
-            setTimeout(() => {
-                // Update highlighting
+            const scrollContainer = document.getElementById('table-container'); // Needed for highlighting
+
+            // Check if mobile styles are active
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            console.log(`isMobile: ${isMobile}`); // Log if mobile media query matches
+
+            if (isMobile && targetRow && scrollContainer) {
+                // --- Mobile: Manual JavaScript Scrolling --- 
+                console.log("Mobile condition met. Target:", targetRow, "Container:", scrollContainer);
+                event.preventDefault(); // Stop native anchor jump
+                
+                // Close the menu first
+                const tocMenu = document.getElementById('toc-menu');
+                if (tocMenu) {
+                    tocMenu.classList.remove('toc-menu-visible');
+                    document.body.classList.remove('toc-menu-open');
+                }
+                
+                // First, highlight the row so we can see it's selected correctly
                 const previouslyHighlighted = scrollContainer.querySelector('tr.highlighted-row');
                 if (previouslyHighlighted) {
                     previouslyHighlighted.classList.remove('highlighted-row');
                 }
-                if (targetRow) {
+                targetRow.classList.add('highlighted-row');
+                
+                // Update context label
+                const aspectLabelSpan = document.getElementById('current-aspect-label');
+                if (aspectLabelSpan) {
+                    updateRowContext(targetRow, aspectLabelSpan);
+                }
+                
+                // CRITICAL FIX: Get the table tbody reference that's available in this scope
+                const table = scrollContainer.querySelector('table');
+                const tbody = table ? table.querySelector('tbody') : null;
+                
+                if (tbody) {
+                    // Get header height (if any)
+                    const thead = table.querySelector('thead');
+                    const headerHeight = thead ? thead.offsetHeight : 0;
+                    
+                    // Direct approach: get the target row's offsetTop relative to table
+                    const rowOffsetTop = targetRow.offsetTop;
+                    
+                    // Apply scroll with a slight adjustment for header if present
+                    console.log(`Row offsetTop: ${rowOffsetTop}, Header height: ${headerHeight}`);
+                    
+                    // Use direct scroll position setting
+                    scrollContainer.scrollTop = rowOffsetTop - headerHeight;
+                    console.log(`Applied scrollTop: ${scrollContainer.scrollTop}`);
+                } else {
+                    console.error("Could not find tbody for scrolling calculation");
+                }
+            } else if (!isMobile && targetRow && scrollContainer) {
+                // --- Desktop: Use Native Scrolling + JS Highlighting --- 
+                // Let the default browser anchor scroll happen (no preventDefault)
+                
+                // Add highlighting slightly after browser scroll starts
+                setTimeout(() => {
+                    // Update highlighting
+                    const previouslyHighlighted = scrollContainer.querySelector('tr.highlighted-row');
+                    if (previouslyHighlighted) {
+                        previouslyHighlighted.classList.remove('highlighted-row');
+                    }
                     targetRow.classList.add('highlighted-row');
                 
                     // Update context label
@@ -191,15 +223,19 @@ function populateToc(tbody, tocListElement, scrollContainer) {
                     if (aspectLabelSpan) {
                         updateRowContext(targetRow, aspectLabelSpan);
                     }
-                }
-                
-                // Close the menu
-                const tocMenu = document.getElementById('toc-menu');
-                if (tocMenu) {
-                    tocMenu.classList.remove('toc-menu-visible');
-                    document.body.classList.remove('toc-menu-open');
-                }
-            }, 100);
+                    
+                    // Close the menu
+                    const tocMenu = document.getElementById('toc-menu');
+                    if (tocMenu) {
+                        tocMenu.classList.remove('toc-menu-visible');
+                        document.body.classList.remove('toc-menu-open');
+                    }
+                }, 50); // Small delay for highlighting
+            } else {
+                // Handle cases where targetRow or scrollContainer isn't found
+                if (!targetRow) console.error(`Target row #${targetId} not found.`);
+                if (!scrollContainer) console.error(`Scroll container not found.`);
+            }
         }
     });
     

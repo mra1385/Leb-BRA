@@ -277,9 +277,10 @@ body.toc-menu-open #right-context-overlay {
 /* --- Responsive Table for Mobile --- */
 @media screen and (max-width: 768px) {
     #table-container {
-        max-height: none; /* Allow full height on mobile if needed */
-        border: none; /* Remove border */
-        box-shadow: none; /* Remove shadow */
+        max-height: 90vh; /* Restore max-height to enable scrolling */
+        overflow-y: auto; /* Ensure vertical scrolling is enabled */
+        border: none; /* Keep border removed */
+        box-shadow: none; /* Keep shadow removed */
     }
 
     table {
