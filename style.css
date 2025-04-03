@@ -57,6 +57,9 @@ tbody td:first-child {
     left: 0; /* Stick to the left */
     z-index: 5; /* Below header but above content */
     border-right: 1px solid #dee2e6; /* Separator line */
+    width: 100px; /* Set fixed width */
+    min-width: 100px; /* Ensure minimum width */
+    max-width: 100px; /* Ensure maximum width */
 }
 
 /* Ensure the top-left header cell is also sticky */
@@ -65,6 +68,9 @@ thead th:first-child {
     left: 0;
     z-index: 15; /* Above row headers and body headers */
     border-right: 1px solid #dee2e6;
+    width: 100px; /* Set fixed width */
+    min-width: 100px; /* Ensure minimum width */
+    max-width: 100px; /* Ensure maximum width */
 }
 
 /* Remove bottom border for the last row */
