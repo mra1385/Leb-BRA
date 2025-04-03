@@ -177,30 +177,43 @@ function populateToc(tbody, tocListElement, scrollContainer) {
                     updateRowContext(targetRow, aspectLabelSpan);
                 }
                 
-                // CRITICAL FIX: Close the menu FIRST, then wait for layout to stabilize before scrolling
+                // Store the target row ID to persist across layout changes
+                const targetRowId = targetRow.id;
+                
+                // iOS-specific approach: Close the menu and use a longer timeout
                 const tocMenu = document.getElementById('toc-menu');
                 if (tocMenu) {
                     tocMenu.classList.remove('toc-menu-visible');
                     document.body.classList.remove('toc-menu-open');
                     
-                    // Wait for layout to stabilize after menu closes
+                    // Use a longer timeout for iOS to ensure layout is fully stabilized
                     setTimeout(() => {
-                        // Get the table and header elements AFTER layout has stabilized
-                        const table = scrollContainer.querySelector('table');
-                        const thead = table ? table.querySelector('thead') : null;
-                        const headerHeight = thead ? thead.offsetHeight : 0;
+                        // Refetch the target row in case DOM has been refreshed
+                        const targetRowAfterWait = document.getElementById(targetRowId);
+                        if (!targetRowAfterWait) {
+                            console.error(`Target row #${targetRowId} not found after waiting`);
+                            return;
+                        }
                         
-                        // Get the target row's position relative to table
-                        const rowOffsetTop = targetRow.offsetTop;
+                        // iOS browsers need more direct approach: scroll the element into view
+                        // with special handling for headers
+                        const yOffset = -60; // Fixed offset to account for headers and UI elements
+                        const y = targetRowAfterWait.getBoundingClientRect().top + window.pageYOffset + yOffset;
                         
-                        console.log(`After menu closed - Row offsetTop: ${rowOffsetTop}, Header height: ${headerHeight}`);
+                        // Try two methods for maximum compatibility
+                        // Method 1: window.scrollTo for the whole page
+                        window.scrollTo({top: y, behavior: 'smooth'});
                         
-                        // Apply scroll position with header adjustment
-                        scrollContainer.scrollTop = rowOffsetTop - headerHeight;
-                        console.log(`Applied final scrollTop: ${scrollContainer.scrollTop}`);
-                    }, 150); // Allow time for CSS transitions to complete
-                } else {
-                    console.error("Could not find TOC menu element");
+                        // Method 2: Direct container scrolling with offsetTop
+                        setTimeout(() => {
+                            const table = scrollContainer.querySelector('table');
+                            const thead = table ? table.querySelector('thead') : null;
+                            const headerHeight = thead ? thead.offsetHeight : 0;
+                            scrollContainer.scrollTop = targetRowAfterWait.offsetTop - headerHeight - 10;
+                        }, 50);
+                        
+                        console.log("Applied iOS-specific scrolling");
+                    }, 300); // Longer delay for iOS
                 }
             } else if (!isMobile && targetRow && scrollContainer) {
                 // --- Desktop: Use Native Scrolling + JS Highlighting --- 
