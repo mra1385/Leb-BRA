@@ -111,9 +111,6 @@ br {
 tbody tr.highlighted-row {
     background-color: #cfe2ff !important; /* Use important to override hover/alternating */
 }
-tbody tr.highlighted-row td {
-     /* Inherits background unless specified */
-}
 tbody tr.highlighted-row td:first-child {
     background-color: #b9d3ff !important; /* Darker highlight for first cell */
 }
