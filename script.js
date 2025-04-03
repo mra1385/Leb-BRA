@@ -164,13 +164,6 @@ function populateToc(tbody, tocListElement, scrollContainer) {
                 console.log("Mobile condition met. Target:", targetRow, "Container:", scrollContainer);
                 event.preventDefault(); // Stop native anchor jump
                 
-                // Close the menu first
-                const tocMenu = document.getElementById('toc-menu');
-                if (tocMenu) {
-                    tocMenu.classList.remove('toc-menu-visible');
-                    document.body.classList.remove('toc-menu-open');
-                }
-                
                 // First, highlight the row so we can see it's selected correctly
                 const previouslyHighlighted = scrollContainer.querySelector('tr.highlighted-row');
                 if (previouslyHighlighted) {
@@ -184,26 +177,30 @@ function populateToc(tbody, tocListElement, scrollContainer) {
                     updateRowContext(targetRow, aspectLabelSpan);
                 }
                 
-                // CRITICAL FIX: Get the table tbody reference that's available in this scope
-                const table = scrollContainer.querySelector('table');
-                const tbody = table ? table.querySelector('tbody') : null;
-                
-                if (tbody) {
-                    // Get header height (if any)
-                    const thead = table.querySelector('thead');
-                    const headerHeight = thead ? thead.offsetHeight : 0;
+                // CRITICAL FIX: Close the menu FIRST, then wait for layout to stabilize before scrolling
+                const tocMenu = document.getElementById('toc-menu');
+                if (tocMenu) {
+                    tocMenu.classList.remove('toc-menu-visible');
+                    document.body.classList.remove('toc-menu-open');
                     
-                    // Direct approach: get the target row's offsetTop relative to table
-                    const rowOffsetTop = targetRow.offsetTop;
-                    
-                    // Apply scroll with a slight adjustment for header if present
-                    console.log(`Row offsetTop: ${rowOffsetTop}, Header height: ${headerHeight}`);
-                    
-                    // Use direct scroll position setting
-                    scrollContainer.scrollTop = rowOffsetTop - headerHeight;
-                    console.log(`Applied scrollTop: ${scrollContainer.scrollTop}`);
+                    // Wait for layout to stabilize after menu closes
+                    setTimeout(() => {
+                        // Get the table and header elements AFTER layout has stabilized
+                        const table = scrollContainer.querySelector('table');
+                        const thead = table ? table.querySelector('thead') : null;
+                        const headerHeight = thead ? thead.offsetHeight : 0;
+                        
+                        // Get the target row's position relative to table
+                        const rowOffsetTop = targetRow.offsetTop;
+                        
+                        console.log(`After menu closed - Row offsetTop: ${rowOffsetTop}, Header height: ${headerHeight}`);
+                        
+                        // Apply scroll position with header adjustment
+                        scrollContainer.scrollTop = rowOffsetTop - headerHeight;
+                        console.log(`Applied final scrollTop: ${scrollContainer.scrollTop}`);
+                    }, 150); // Allow time for CSS transitions to complete
                 } else {
-                    console.error("Could not find tbody for scrolling calculation");
+                    console.error("Could not find TOC menu element");
                 }
             } else if (!isMobile && targetRow && scrollContainer) {
                 // --- Desktop: Use Native Scrolling + JS Highlighting --- 
