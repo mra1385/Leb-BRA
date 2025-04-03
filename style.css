@@ -321,6 +321,7 @@ body.toc-menu-open #right-context-overlay {
         color: #555;
         text-transform: uppercase;
         font-size: 0.8em;
+        white-space: pre-line; /* Allow line breaks from \n in content */
     }
 
     td:last-child {
