@@ -3,7 +3,7 @@ import html # Import the html module for escaping
 from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 
-def convert_docx_table_to_html(docx_filename="comparison.docx", output_html_filename="table_content.html"):
+def convert_docx_table_to_html(docx_filename="comparison_Apr2.docx", output_html_filename="table_content.html"):
     """Reads the first table from a .docx file and saves its HTML <table> representation to a file, adding combined data-label attributes for responsive design."""
     try:
         document = Document(docx_filename)
